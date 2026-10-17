@@ -46,9 +46,9 @@ class MainActivity : Activity() {
             typeface = Typeface.DEFAULT_BOLD
         }
         root.addView(title)
-        root.addView(label("每小時查詢 Apple 中國大陸門店取貨庫存。發現無貨轉有貨時，Android 會送出通知。", 15f, 0xFF4D5968))
-        root.addView(label("商品型號", 18f, 0xFF121820, true))
-        root.addView(label("每行一個中國版 Apple 型號代碼和名稱，格式：代碼 | 容量／顏色。請將所有想監測的容量與顏色都加入。", 13f, 0xFF596575))
+        root.addView(label("每小時查詢 Apple 中國大陸門店取貨庫存。發現無貨轉有貨時，Android 會送出通知。", 15f, 0xFF4D5968.toInt()))
+        root.addView(label("商品型號", 18f, 0xFF121820.toInt(), true))
+        root.addView(label("每行一個中國版 Apple 型號代碼和名稱，格式：代碼 | 容量／顏色。請將所有想監測的容量與顏色都加入。", 13f, 0xFF596575.toInt()))
         skuField = EditText(this).apply {
             hint = "例如：MXXXXCH/A | Duo 512GB 星光白"
             minLines = 3
@@ -61,8 +61,8 @@ class MainActivity : Activity() {
         }
         root.addView(skuField, marginTop(8))
 
-        root.addView(label("監測門店", 18f, 0xFF121820, true), marginTop(18))
-        root.addView(label("預設為門店清單中的 48 家；可刪除不需要的編號。要加入新店，請先核對 Apple 官方門店編號。以逗號或空格分隔。", 13f, 0xFF596575))
+        root.addView(label("監測門店", 18f, 0xFF121820.toInt(), true), marginTop(18))
+        root.addView(label("預設為門店清單中的 48 家；可刪除不需要的編號。要加入新店，請先核對 Apple 官方門店編號。以逗號或空格分隔。", 13f, 0xFF596575.toInt()))
         storeField = EditText(this).apply {
             minLines = 3
             maxLines = 5
@@ -93,9 +93,9 @@ class MainActivity : Activity() {
             Toast.makeText(this, "已停止背景監測", Toast.LENGTH_SHORT).show()
             updateStatus()
         }, marginTop(8))
-        status = label("", 14f, 0xFF334155)
+        status = label("", 14f, 0xFF334155.toInt())
         root.addView(status, marginTop(18))
-        root.addView(label("提示：Android 省電模式、網路狀態與系統排程可能延後背景查詢。庫存由 Apple 官網系統提供，請在收到通知後立即到 Apple 官網確認。門店清單為 2025 年資料快照，請自行核對更新。", 12f, 0xFF687386), marginTop(18))
+        root.addView(label("提示：Android 省電模式、網路狀態與系統排程可能延後背景查詢。庫存由 Apple 官網系統提供，請在收到通知後立即到 Apple 官網確認。門店清單為 2025 年資料快照，請自行核對更新。", 12f, 0xFF687386.toInt()), marginTop(18))
         updateStatus()
     }
 
