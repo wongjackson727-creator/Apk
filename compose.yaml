@@ -1,0 +1,7 @@
+services:
+  duo-monitor:
+    build: .
+    container_name: iphone-duo-stock-monitor
+    restart: unless-stopped
+    volumes:
+      - ./data:/data

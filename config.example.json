@@ -1,0 +1,14 @@
+{
+  "interval_seconds": 3600,
+  "request_delay_seconds": 1.5,
+  "stores_file": "stores-china-mainland.json",
+  "products": [
+    {"part_number": "請替換為Duo的CH/A型號代碼", "name": "iPhone Duo（容量／顏色）"}
+  ],
+  "notifications": {
+    "telegram_bot_token": "",
+    "telegram_chat_id": "",
+    "bark_url": "",
+    "webhook_url": ""
+  }
+}
