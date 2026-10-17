@@ -2,12 +2,12 @@
 
 ## Android App
 
-已附 Android Studio 原生專案，請開啟 `android/` 資料夾建置並安裝到手機。具備每小時背景查詢、編輯 SKU 與門店、立即查詢，以及 Android 本機到貨通知。詳細步驟見 [`android/README.md`](android/README.md)。GitHub Actions workflow 位於 `.github/workflows/build-apk.yml`；push 至 `main`／`master` 或手動執行後，APK 會作為 `app-debug-apk` artifact 上傳。
+已附 Android Studio 原生專案，請開啟 `android/` 資料夾建置並安裝到手機。具備約每分鐘背景查詢、編輯 SKU 與門店、立即查詢，以及 Android 本機到貨通知。啟用後會顯示常駐通知；一輪掃描可能因門店與 SKU 數量而超過一分鐘。詳細步驟見 [`android/README.md`](android/README.md)。GitHub Actions workflow 位於 `.github/workflows/build-apk.yml`；push 至 `main`／`master` 或手動執行後，APK 會作為 `app-debug-apk` artifact 上傳。
 
 
-每小時查詢 Apple 中國大陸門店的到店取貨狀態。只在「無貨 → 有貨」時發送通知；狀態會保存在本機，避免每次輪詢重複通知。支援 Telegram、Bark 與一般 JSON Webhook。
+Android App 約每分鐘查詢；Python／Docker 監測器依設定檔間隔（預設一小時）查詢 Apple 中國大陸門店的到店取貨狀態。只在「無貨 → 有貨」時發送通知；狀態會保存在本機，避免每次輪詢重複通知。支援 Telegram、Bark 與一般 JSON Webhook。
 
-> 監測來源為 Apple 官網使用的取貨查詢介面。Apple 沒有將此介面作為穩定的公開開發者 API；格式或存取限制可能變更。程式採序列查詢、每小時一輪，請勿改成高頻輪詢。顯示有貨後仍須以 Apple 官方購買頁確認，庫存不會保留給監測程式。
+> 監測來源為 Apple 官網使用的取貨查詢介面。Apple 沒有將此介面作為穩定的公開開發者 API；格式或存取限制可能變更。程式採序列查詢；Apple 未承諾此介面支援高頻輪詢，請勿將請求頻率提高到超出自身使用需求。顯示有貨後仍須以 Apple 官方購買頁確認，庫存不會保留給監測程式。
 
 ## 快速開始（Python 3.10+，不需第三方套件）
 

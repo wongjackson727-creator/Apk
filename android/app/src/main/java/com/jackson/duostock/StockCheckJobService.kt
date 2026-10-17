@@ -26,27 +26,17 @@ import java.util.concurrent.atomic.AtomicBoolean
 class StockCheckJobService : JobService() {
     companion object {
         const val PREFS = "duo_stock_preferences"
-        private const val PERIODIC_ID = 4201
         private const val NOW_ID = 4202
         private const val CHANNEL_ID = "duo_stock_alerts"
-        private const val PERIOD_MS = 60L * 60L * 1000L
         private val running = AtomicBoolean(false)
 
         fun enable(context: Context) {
-            val scheduler = context.getSystemService(JobScheduler::class.java)
-            val component = ComponentName(context, StockCheckJobService::class.java)
-            if (scheduler.getPendingJob(PERIODIC_ID) == null) {
-                val job = JobInfo.Builder(PERIODIC_ID, component)
-                    .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                    .setPersisted(true)
-                    .setPeriodic(PERIOD_MS)
-                    .build()
-                scheduler.schedule(job)
-            }
             context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putBoolean("enabled", true).apply()
+            context.startForegroundService(Intent(context, MinuteMonitorService::class.java))
         }
 
         fun checkNow(context: Context) {
+            if (running.get()) return
             val scheduler = context.getSystemService(JobScheduler::class.java)
             val job = JobInfo.Builder(NOW_ID, ComponentName(context, StockCheckJobService::class.java))
                 .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
@@ -57,7 +47,7 @@ class StockCheckJobService : JobService() {
         }
 
         fun disable(context: Context) {
-            context.getSystemService(JobScheduler::class.java).cancel(PERIODIC_ID)
+            context.stopService(Intent(context, MinuteMonitorService::class.java))
             context.getSystemService(JobScheduler::class.java).cancel(NOW_ID)
             context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putBoolean("enabled", false).apply()
         }

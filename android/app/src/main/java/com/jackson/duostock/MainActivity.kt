@@ -46,7 +46,7 @@ class MainActivity : Activity() {
             typeface = Typeface.DEFAULT_BOLD
         }
         root.addView(title)
-        root.addView(label("每小時查詢 Apple 中國大陸門店取貨庫存。發現無貨轉有貨時，Android 會送出通知。", 15f, 0xFF4D5968.toInt()))
+        root.addView(label("約每分鐘啟動一輪 Apple 中國大陸門店取貨查詢。持續監測時會顯示 Android 通知；發現無貨轉有貨時會另發到貨通知。", 15f, 0xFF4D5968.toInt()))
         root.addView(label("商品型號", 18f, 0xFF121820.toInt(), true))
         root.addView(label("每行一個中國版 Apple 型號代碼和名稱，格式：代碼 | 容量／顏色。請將所有想監測的容量與顏色都加入。", 13f, 0xFF596575.toInt()))
         skuField = EditText(this).apply {
@@ -74,10 +74,10 @@ class MainActivity : Activity() {
         }
         root.addView(storeField, marginTop(8))
 
-        val saveButton = button("儲存設定並啟用監測") {
+        val saveButton = button("儲存設定並啟用每分鐘監測") {
             if (saveAndValidate()) {
                 StockCheckJobService.enable(this)
-                Toast.makeText(this, "已啟用每小時背景監測", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "已啟用每分鐘監測；持續期間會顯示通知", Toast.LENGTH_SHORT).show()
                 updateStatus()
             }
         }
@@ -95,7 +95,7 @@ class MainActivity : Activity() {
         }, marginTop(8))
         status = label("", 14f, 0xFF334155.toInt())
         root.addView(status, marginTop(18))
-        root.addView(label("提示：Android 省電模式、網路狀態與系統排程可能延後背景查詢。庫存由 Apple 官網系統提供，請在收到通知後立即到 Apple 官網確認。門店清單為 2025 年資料快照，請自行核對更新。", 12f, 0xFF687386.toInt()), marginTop(18))
+        root.addView(label("提示：每分鐘監測需要保留常駐通知；Android 省電模式、網路狀態或廠商背景限制仍可能延後或停止查詢。每輪會按序查詢各門店，店數或 SKU 較多時一輪可能超過一分鐘。庫存由 Apple 官網系統提供，請在收到通知後立即到 Apple 官網確認。門店清單為 2025 年資料快照，請自行核對更新。", 12f, 0xFF687386.toInt()), marginTop(18))
         updateStatus()
     }
 
@@ -141,7 +141,7 @@ class MainActivity : Activity() {
         val last = prefs.getString("last_checked", "尚未查詢") ?: "尚未查詢"
         val errors = prefs.getInt("last_error_count", 0)
         val found = prefs.getString("available_summary", "目前未記錄到有貨") ?: "目前未記錄到有貨"
-        status.text = "狀態：${if (enabled) "監測中（每小時）" else "已停止"}\n最近查詢：$last\n最近一輪錯誤：$errors\n$found"
+        status.text = "狀態：${if (enabled) "監測中（約每分鐘）" else "已停止"}\n最近查詢：$last\n最近一輪錯誤：$errors\n$found"
     }
 
     private fun requestNotificationPermission() {
