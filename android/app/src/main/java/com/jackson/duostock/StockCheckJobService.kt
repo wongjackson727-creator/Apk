@@ -121,7 +121,7 @@ class StockCheckJobService : JobService() {
                     nowAvailable.add(key)
                     if (key !in oldAvailable) {
                         // Notify at the first confirmed store/SKU match instead of waiting for the full nationwide sweep.
-                        notifyStock(listOf("${product.name}｜${store.city} ${store.name}（${store.id}）"))
+                        notifyStock(product.part, "${product.name}｜${store.city} ${store.name}（${store.id}）")
                     }
                 }
             } catch (e: Exception) {
@@ -178,20 +178,33 @@ class StockCheckJobService : JobService() {
         }
     }
 
-    private fun notifyStock(items: List<String>) {
+    private fun notifyStock(part: String, itemDescription: String) {
         val manager = getSystemService(NotificationManager::class.java)
         if (Build.VERSION.SDK_INT >= 26) manager.createNotificationChannel(
             NotificationChannel(CHANNEL_ID, "iPhone Duo 有貨通知", NotificationManager.IMPORTANCE_HIGH)
         )
-        val intent = Intent(this, MainActivity::class.java)
-        val pending = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-        val text = items.take(5).joinToString("\n") + if (items.size > 5) "\n另有 ${items.size - 5} 項" else ""
+
+        // Open Apple's official product page; the user chooses pickup, signs in, and pays there.
+        val validPartNumber = Regex("^[A-Z0-9]+CH/A$", RegexOption.IGNORE_CASE).matches(part)
+        val productPath = if (validPartNumber) {
+            "https://www.apple.com.cn/shop/buy-iphone/iphone-duo/" + part.lowercase()
+        } else {
+            "https://www.apple.com.cn/shop/buy-iphone/iphone-duo"
+        }
+        val orderIntent = Intent(Intent.ACTION_VIEW, Uri.parse(productPath))
+        val orderPending = PendingIntent.getActivity(
+            this, 1025, orderIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        val text = itemDescription + "
+點選通知前往 Apple 官方商品頁；請自行確認取貨門店並登入完成下單與付款。"
         val notification = if (Build.VERSION.SDK_INT >= 26) Notification.Builder(this, CHANNEL_ID) else Notification.Builder(this)
         notification.setSmallIcon(android.R.drawable.ic_dialog_info)
-            .setContentTitle("iPhone Duo 門店取貨有貨")
-            .setContentText(items.first())
+            .setContentTitle("iPhone Duo 門店有貨")
+            .setContentText(itemDescription)
             .setStyle(Notification.BigTextStyle().bigText(text))
-            .setContentIntent(pending)
+            .setContentIntent(orderPending)
+            .addAction(android.R.drawable.ic_menu_view, "前往 Apple 官網選購", orderPending)
             .setAutoCancel(true)
         manager.notify(1024, notification.build())
     }
