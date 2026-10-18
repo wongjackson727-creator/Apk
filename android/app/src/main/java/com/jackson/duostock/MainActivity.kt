@@ -16,6 +16,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ScrollView
+import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
 
@@ -55,7 +56,14 @@ class MainActivity : Activity() {
         root.addView(button("前往 Apple 官網確認並下單") {
             openSelectedProductPage()
         }, marginTop(8))
-        root.addView(label("到貨後請由你本人選擇門店、登入並確認下單和付款。App 不會自動送出訂單，也不能替你保留庫存。", 13f, 0xFF687386.toInt()), marginTop(8))
+        root.addView(Switch(this).apply {
+            text = "到貨通知顯示 Apple 官網快捷鍵"
+            isChecked = prefs.getBoolean("quick_order_shortcut_enabled", true)
+            setOnCheckedChangeListener { _, enabled ->
+                prefs.edit().putBoolean("quick_order_shortcut_enabled", enabled).apply()
+            }
+        }, marginTop(12))
+        root.addView(label("快捷鍵只會開啟 Apple 官方商品頁，不會自動下單或鎖貨。請由你本人在官網登入、選擇門店並確認訂單和付款；App 不會收集或保存 Apple 帳號密碼。", 13f, 0xFF687386.toInt()), marginTop(4))
         root.addView(label("商品型號", 18f, 0xFF121820.toInt(), true))
         root.addView(label("每行一個中國版 Apple 型號代碼和名稱，格式：代碼 | 容量／顏色。請將所有想監測的容量與顏色都加入。", 13f, 0xFF596575.toInt()))
         skuField = EditText(this).apply {

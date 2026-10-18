@@ -203,8 +203,11 @@ class StockCheckJobService : JobService() {
             .setContentText(itemDescription)
             .setStyle(Notification.BigTextStyle().bigText(text))
             .setContentIntent(orderPending)
-            .addAction(android.R.drawable.ic_menu_view, "前往 Apple 官網選購", orderPending)
+
             .setAutoCancel(true)
+        if (getSharedPreferences(PREFS, MODE_PRIVATE).getBoolean("quick_order_shortcut_enabled", true)) {
+            notification.addAction(android.R.drawable.ic_menu_view, "前往 Apple 官網選購", orderPending)
+        }
         manager.notify(1024, notification.build())
     }
 
