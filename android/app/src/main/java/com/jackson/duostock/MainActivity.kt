@@ -6,7 +6,7 @@ import android.app.job.JobScheduler
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.content.pm.PackageManager
+
 import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
@@ -145,15 +145,13 @@ class MainActivity : Activity() {
     }
 
     private fun openInDefaultBrowser(url: String) {
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-        if (intent.resolveActivity(packageManager) == null) {
-            Toast.makeText(this, "找不到可開啟 Apple 官網的瀏覽器", Toast.LENGTH_LONG).show()
-            return
+        val viewIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
+            addCategory(Intent.CATEGORY_BROWSABLE)
         }
         try {
-            startActivity(intent)
+            startActivity(Intent.createChooser(viewIntent, "選擇瀏覽器"))
         } catch (_: android.content.ActivityNotFoundException) {
-            Toast.makeText(this, "無法開啟 Apple 官網", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "找不到可開啟 Apple 官網的瀏覽器", Toast.LENGTH_LONG).show()
         }
     }
     private fun saveAndValidate(): Boolean {
