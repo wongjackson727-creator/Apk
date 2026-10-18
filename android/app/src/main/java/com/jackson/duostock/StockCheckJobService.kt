@@ -196,8 +196,7 @@ class StockCheckJobService : JobService() {
             this, 1025, orderIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-        val text = itemDescription + "
-點選通知前往 Apple 官方商品頁；請自行確認取貨門店並登入完成下單與付款。"
+        val text = itemDescription + "\n點選通知前往 Apple 官方商品頁；請自行確認取貨門店並登入完成下單與付款。"
         val notification = if (Build.VERSION.SDK_INT >= 26) Notification.Builder(this, CHANNEL_ID) else Notification.Builder(this)
         notification.setSmallIcon(android.R.drawable.ic_dialog_info)
             .setContentTitle("iPhone Duo 門店有貨")
