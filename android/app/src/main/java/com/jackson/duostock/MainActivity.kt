@@ -4,6 +4,8 @@ import android.Manifest
 import android.app.Activity
 import android.app.job.JobScheduler
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.content.pm.PackageManager
 import android.graphics.Typeface
 import android.os.Build
@@ -47,6 +49,13 @@ class MainActivity : Activity() {
         }
         root.addView(title)
         root.addView(label("約每分鐘啟動一輪 Apple 中國大陸門店取貨查詢。持續監測時會顯示 Android 通知；發現無貨轉有貨時會另發到貨通知。", 15f, 0xFF4D5968.toInt()))
+        root.addView(button("登入 Apple 帳號（預設瀏覽器）") {
+            openInDefaultBrowser("https://account.apple.com/")
+        }, marginTop(8))
+        root.addView(button("前往 Apple 官網確認並下單") {
+            openSelectedProductPage()
+        }, marginTop(8))
+        root.addView(label("到貨後請由你本人選擇門店、登入並確認下單和付款。App 不會自動送出訂單，也不能替你保留庫存。", 13f, 0xFF687386.toInt()), marginTop(8))
         root.addView(label("商品型號", 18f, 0xFF121820.toInt(), true))
         root.addView(label("每行一個中國版 Apple 型號代碼和名稱，格式：代碼 | 容量／顏色。請將所有想監測的容量與顏色都加入。", 13f, 0xFF596575.toInt()))
         skuField = EditText(this).apply {
@@ -117,6 +126,28 @@ class MainActivity : Activity() {
         setOnClickListener { action() }
     }
 
+    private fun openSelectedProductPage() {
+        val partNumber = skuField.text.toString().lineSequence()
+            .map { it.substringBefore("|").trim().uppercase() }
+            .firstOrNull { Regex("^[A-Z0-9]+CH/A$").matches(it) }
+        val url = partNumber?.let {
+            "https://www.apple.com.cn/shop/buy-iphone/iphone-duo/${it.lowercase()}"
+        } ?: "https://www.apple.com.cn/shop/buy-iphone/iphone-duo"
+        openInDefaultBrowser(url)
+    }
+
+    private fun openInDefaultBrowser(url: String) {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        if (intent.resolveActivity(packageManager) == null) {
+            Toast.makeText(this, "找不到可開啟 Apple 官網的瀏覽器", Toast.LENGTH_LONG).show()
+            return
+        }
+        try {
+            startActivity(intent)
+        } catch (_: android.content.ActivityNotFoundException) {
+            Toast.makeText(this, "無法開啟 Apple 官網", Toast.LENGTH_LONG).show()
+        }
+    }
     private fun saveAndValidate(): Boolean {
         val skus = skuField.text.toString().lines().map { it.trim() }.filter { it.isNotBlank() }
         if (skus.isEmpty()) {
